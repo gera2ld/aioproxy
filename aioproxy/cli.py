@@ -9,7 +9,7 @@ from pyserve import serve_forever
 from aiohttp import web
 from aiohttp.log import server_logger, access_logger
 from . import __version__
-from .handler import handle
+from .handlers import handle
 
 def parse_addr(host, default=('', 80)):
     result = urllib.parse.urlparse('//' + host)
