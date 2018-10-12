@@ -1,0 +1,18 @@
+[[source]]
+# url = "https://pypi.org/simple"
+url = "http://pypi.douban.com/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pyserve = {editable = true, git = "https://github.com/gera2ld/pyserve"}
+click = "*"
+aiohttp = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
+
+[scripts]
+start = "python -m pyproxy.cli"

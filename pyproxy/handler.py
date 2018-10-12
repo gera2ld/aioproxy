@@ -38,6 +38,8 @@ async def handle_connect(request):
         status=200,
         reason='Connection established',
     )
+    # disable chunked encoding
+    response._length_check = False
     await response.prepare(request)
     response._reader = streams.DataQueue(loop=request._loop)
     request.protocol.set_parser(ConnectReader(response._reader))
@@ -58,17 +60,20 @@ async def handle_connect(request):
         pass
     return response
 
-async def handle_request(request):
+async def handle_request_proxy(request):
     async with aiohttp.ClientSession() as session:
         async with session.request(
             request.method,
             request.raw_path,
             headers=request.headers,
+            data=await request.content.read(),
             allow_redirects=False,
         ) as client_response:
             headers = client_response.headers.copy()
+            headers.popall('content-length', None)
             headers.popall('content-encoding', None)
             headers.popall('transfer-encoding', None)
+            headers.popall('etag', None)
             for key in headers.keys():
                 if key.lower().startswith('proxy-'):
                     headers.popall(key, None)
@@ -84,4 +89,6 @@ async def handle_request(request):
 async def handle(request):
     if request.method == 'CONNECT':
         return await handle_connect(request)
-    return await handle_request(request)
+    if '://' in request.raw_path:
+        return await handle_request_proxy(request)
+    raise web.HTTPNotFound

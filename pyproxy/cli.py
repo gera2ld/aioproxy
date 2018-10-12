@@ -1,9 +1,11 @@
 import sys
 import platform
 import urllib
+import socket
 import logging
 import asyncio
 import click
+from pyserve import serve_forever
 from aiohttp import web
 from aiohttp.log import server_logger, access_logger
 from . import __version__
@@ -25,10 +27,10 @@ def main(bind):
     server_logger.info(
         'Proxy Server v%s/%s %s - by Gerald',
         __version__, platform.python_implementation(), platform.python_version())
-    server = web.Server(handle)
+    web_server = web.Server(handle)
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(loop.create_server(server, host, port))
-    loop.run_forever()
+    server = loop.run_until_complete(loop.create_server(web_server, host, port))
+    serve_forever(server, loop)
     return 0
 
 if __name__ == "__main__":
