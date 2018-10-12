@@ -15,4 +15,4 @@ aiohttp = "*"
 python_version = "3.7"
 
 [scripts]
-start = "python -m pyproxy.cli"
+start = "python -m aioproxy.cli"
