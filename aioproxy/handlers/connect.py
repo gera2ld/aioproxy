@@ -1,4 +1,6 @@
+import asyncio
 from aiohttp import web, streams
+from .util import forward_data
 
 class ConnectReader:
     def __init__(self, queue):

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8e76be4f0f8216eaf0da16b98527c238c158f18ff8b42dcd186cc2942eb347c1"
+            "sha256": "289a273e4858eb16fd70471de87705b67b78d35e1d06da3b6c477a8395893a38"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -10,7 +10,7 @@
         "sources": [
             {
                 "name": "pypi",
-                "url": "http://pypi.douban.com/simple",
+                "url": "https://pypi.org/simple",
                 "verify_ssl": true
             }
         ]
@@ -46,11 +46,11 @@
         },
         "async-timeout": {
             "hashes": [
-                "sha256:474d4bc64cee20603e225eb1ece15e248962958b45a3648a9f5cc29e827a610c",
-                "sha256:b3c0ddc416736619bd4a95ca31de8da6920c3b9a140c64dbef2b2fa7bf521287"
+                "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f",
+                "sha256:4291ca197d287d274d0b6cb5d6f8f8f82d434ed288f962539ff18cc9012f9ea3"
             ],
             "markers": "python_version >= '3.5.3'",
-            "version": "==3.0.0"
+            "version": "==3.0.1"
         },
         "attrs": {
             "hashes": [
@@ -73,6 +73,13 @@
             ],
             "index": "pypi",
             "version": "==7.0"
+        },
+        "gera2ld.pyserve": {
+            "hashes": [
+                "sha256:846d16e7e9a91b8e78810aa9394c4d07da356412de2118dcd8fcd8e1f6ccfb5b"
+            ],
+            "index": "pypi",
+            "version": "==0.0.2"
         },
         "idna": {
             "hashes": [
@@ -115,11 +122,6 @@
             ],
             "markers": "python_version >= '3.4.1'",
             "version": "==4.4.2"
-        },
-        "pyserve": {
-            "editable": true,
-            "git": "https://github.com/gera2ld/pyserve",
-            "ref": "a4807f6d04c898405b69d2c916524316018b1f7b"
         },
         "yarl": {
             "hashes": [
