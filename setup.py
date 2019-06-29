@@ -5,7 +5,7 @@
 
 from setuptools import setup, find_packages
 
-requirements = ['Click>=6.0', 'aiohttp>=3.4.4']
+requirements = ['Click>=6.0', 'aiohttp>=3.4.4', 'gera2ld.pyserve']
 
 setup_requirements = [ ]
 

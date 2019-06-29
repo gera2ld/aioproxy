@@ -4,7 +4,7 @@ import urllib
 import logging
 import asyncio
 import click
-from pyserve import serve_forever
+from gera2ld.pyserve import serve_forever
 from aiohttp import web
 from aiohttp.log import server_logger
 from . import __version__
