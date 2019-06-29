@@ -1,13 +1,12 @@
 import sys
 import platform
 import urllib
-import socket
 import logging
 import asyncio
 import click
 from pyserve import serve_forever
 from aiohttp import web
-from aiohttp.log import server_logger, access_logger
+from aiohttp.log import server_logger
 from . import __version__
 from .handlers import handle
 
