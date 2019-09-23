@@ -1,13 +1,12 @@
 [[source]]
-url = "https://pypi.org/simple"
-# url = "http://pypi.douban.com/simple"
+name = "tuna"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 verify_ssl = true
-name = "pypi"
 
 [packages]
 click = "*"
 aiohttp = "*"
-"gera2ld.pyserve" = "*"
+gera2ld-pyserve = "*"
 
 [dev-packages]
 
