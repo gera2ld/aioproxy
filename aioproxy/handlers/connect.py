@@ -1,6 +1,8 @@
 import asyncio
 from aiohttp import web, streams
+from async_dns import types
 from .util import forward_data
+from .dns import get_resolver
 
 class ConnectReader:
     def __init__(self, queue):
@@ -24,7 +26,16 @@ class ConnectReader:
 async def handle(request):
     host, _, port = request.raw_path.partition(':')
     port = int(port)
-    reader, writer = await asyncio.open_connection(host, port, loop=request._loop)
+    resolver = get_resolver()
+    qtype = types.A
+    res = await resolver.query(host, qtype)
+    ip = None
+    if res:
+        for item in res.an:
+            if item.qtype == qtype:
+                ip = item.data
+                break
+    reader, writer = await asyncio.open_connection(ip, port, loop=request._loop)
     response = web.StreamResponse(
         status=200,
         reason='Connection established',
