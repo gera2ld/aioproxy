@@ -8,7 +8,7 @@ authors = ["Gerald <gera2ld@163.com>"]
 python = "^3.6"
 click = "^7.0"
 aiohttp = "^3.6.2"
-gera2ld-pyserve = "^0.0.6"
+gera2ld-pyserve = "^0.2.0"
 async_dns = "^1.0.10"
 
 [tool.poetry.dev-dependencies]
