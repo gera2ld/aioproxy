@@ -1,8 +1,7 @@
 import asyncio
 from aiohttp import web, streams
-from async_dns import types
+from gera2ld.socks.client import create_client
 from .util import forward_data
-from .dns import get_resolver
 
 class ConnectReader:
     def __init__(self, queue):
@@ -23,19 +22,15 @@ class ConnectReader:
             self.queue.set_exception(exc)
             return True, b''
 
-async def handle(request):
+async def handle(handler, request):
     host, _, port = request.raw_path.partition(':')
     port = int(port)
-    resolver = get_resolver()
-    qtype = types.A
-    res = await resolver.query(host, qtype)
-    ip = None
-    if res:
-        for item in res.an:
-            if item.qtype == qtype:
-                ip = item.data
-                break
-    reader, writer = await asyncio.open_connection(ip, port, loop=request._loop)
+    if handler.socks_proxy:
+        client = create_client(handler.socks_proxy, remote_dns=True)
+        await client.handle_connect((host, port))
+        reader, writer = client.reader, client.writer
+    else:
+        reader, writer = await asyncio.open_connection(host, port)
     response = web.StreamResponse(
         status=200,
         reason='Connection established',

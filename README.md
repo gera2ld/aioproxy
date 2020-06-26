@@ -5,5 +5,5 @@ A simple proxy server implemented with pure Python on top of [aiohttp](https://a
 ## Usage
 
 ```sh
-$ aioproxy [-b :5000]
+$ aioproxy [-b :1086] [-x socks5://127.0.0.1:1080]
 ```

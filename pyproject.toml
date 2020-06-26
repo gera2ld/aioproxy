@@ -8,13 +8,14 @@ authors = ["Gerald <gera2ld@163.com>"]
 python = "^3.6"
 click = "^7.0"
 aiohttp = "^3.6.2"
-gera2ld-pyserve = "^0.2.0"
 async_dns = "^1.0.10"
+"gera2ld.socks" = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.scripts]
-start = "aioproxy.cli:main"
+aioproxy = "aioproxy.cli:main"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"

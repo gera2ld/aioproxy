@@ -1,52 +1,32 @@
 import asyncio
 import aiohttp
 import socket
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple, Type
 from aiohttp import web, TCPConnector
-from aiohttp.abc import AbstractResolver
 from aiohttp.helpers import get_running_loop
-from async_dns import types
+from aiohttp.client_proto import ResponseHandler
+from gera2ld.socks.client import create_client
 from .util import forward_data
-from .dns import get_resolver
 
-resolver = None
+class SOCKSConnector(TCPConnector):
+    def __init__(self, socks_proxy, *k, **kw):
+        super().__init__(*k, **kw)
+        self.socks_proxy = socks_proxy
 
-class AsyncResolver(AbstractResolver):
-    def __init__(self, loop: Optional[asyncio.AbstractEventLoop]=None) -> None:
-        self._loop = get_running_loop(loop)
-        self._resolver = get_resolver()
+    async def _create_connection(self, req: 'ClientRequest',
+                                 traces: List['Trace'],
+                                 timeout: 'ClientTimeout') -> ResponseHandler:
+        client = create_client(self.socks_proxy, remote_dns=True)
+        await client.handle_connect((req.url.host, req.url.port))
+        rawsock = client.writer._transport.get_extra_info('socket', default=None)
+        _transp, proto = await self._wrap_create_connection(
+            self._factory, timeout=timeout,
+            sock=rawsock,
+            req=req)
+        return proto
 
-    async def resolve(self, host: str, port: int=0,
-                      family: int=socket.AF_INET) -> List[Dict[str, Any]]:
-        if family == socket.AF_INET:
-            qtype = types.A
-        elif family == socket.AF_INET6:
-            qtype = types.AAAA
-        else:
-            qtype = types.ANY
-        res = await self._resolver.query(host, qtype)
-        hosts = []
-        if res:
-            for item in res.an:
-                if item.qtype in (types.A, types.AAAA):
-                    hosts.append({
-                        'hostname': host,
-                        'host': item.data,
-                        'port': port,
-                        'family': socket.AF_INET if item.qtype == types.A else socket.AF_INET6,
-                        'proto': 0,
-                        'flags': socket.AI_NUMERICHOST,
-                    })
-        return hosts
-
-    async def close(self) -> None:
-        pass
-
-async def handle(request):
-    global resolver
-    if resolver is None:
-        resolver = AsyncResolver()
-    connector = TCPConnector(force_close=True, resolver=resolver)
+async def handle(handler, request):
+    connector = SOCKSConnector(handler.socks_proxy, force_close=True)
     async with aiohttp.ClientSession(connector=connector) as session:
         async with session.request(
             request.method,
