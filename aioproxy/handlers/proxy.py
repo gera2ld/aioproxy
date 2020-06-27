@@ -19,11 +19,16 @@ class SOCKSConnector(TCPConnector):
         client = create_client(self.socks_proxy, remote_dns=True)
         await client.handle_connect((req.url.host, req.url.port))
         rawsock = client.writer._transport.get_extra_info('socket', default=None)
+        self.client = client
         _transp, proto = await self._wrap_create_connection(
             self._factory, timeout=timeout,
             sock=rawsock,
             req=req)
         return proto
+
+    def _release(self, *k, **kw) -> None:
+        self.client.writer.close()
+        return super()._release(*k, **kw)
 
 async def handle(handler, request):
     connector = SOCKSConnector(handler.socks_proxy, force_close=True)
