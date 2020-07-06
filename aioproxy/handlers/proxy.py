@@ -32,7 +32,7 @@ class SOCKSConnector(TCPConnector):
 
 async def handle(handler, request):
     connector = SOCKSConnector(handler.socks_proxy, force_close=True)
-    async with aiohttp.ClientSession(connector=connector) as session:
+    async with aiohttp.ClientSession(connector=connector, auto_decompress=False) as session:
         async with session.request(
             request.method,
             request.raw_path,
@@ -41,10 +41,7 @@ async def handle(handler, request):
             allow_redirects=False,
         ) as client_response:
             headers = client_response.headers.copy()
-            headers.popall('content-length', None)
-            headers.popall('content-encoding', None)
-            headers.popall('transfer-encoding', None)
-            headers.popall('etag', None)
+            headers.popall('transfer-encoding', None) # e.g. chunked
             for key in headers.keys():
                 if key.lower().startswith('proxy-'):
                     headers.popall(key, None)
