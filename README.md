@@ -1,6 +1,12 @@
-# aioproxy
+# gera2ld.aioproxy
 
-A simple proxy server implemented with pure Python on top of [aiohttp](https://aiohttp.readthedocs.io/).
+A simple HTTP proxy server implemented with pure Python on top of [aiohttp](https://aiohttp.readthedocs.io/).
+
+## Installation
+
+```sh
+$ pip3 install gera2ld.aioproxy
+```
 
 ## Usage
 
