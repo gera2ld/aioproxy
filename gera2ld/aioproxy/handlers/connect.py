@@ -1,5 +1,6 @@
 import asyncio
 from aiohttp import web, streams
+from gera2ld.pyserve import Host
 from gera2ld.socks.client import create_client
 from .util import forward_data
 
@@ -23,14 +24,13 @@ class ConnectReader:
             return True, b''
 
 async def handle(handler, request):
-    host, _, port = request.raw_path.partition(':')
-    port = int(port)
+    hostinfo = Host(request.raw_path)
     if handler.socks_proxy:
         client = create_client(handler.socks_proxy, remote_dns=True)
-        await client.handle_connect((host, port))
+        await client.handle_connect((hostinfo.hostname, hostinfo.port))
         reader, writer = client.reader, client.writer
     else:
-        reader, writer = await asyncio.open_connection(host, port)
+        reader, writer = await asyncio.open_connection(hostinfo.hostname, hostinfo.port)
     response = web.StreamResponse(
         status=200,
         reason='Connection established',
