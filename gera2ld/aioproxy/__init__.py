@@ -6,6 +6,6 @@ except ImportError:
     import importlib_metadata as metadata
 
 try:
-    __version__ = metadata.version('json-server.py')
+    __version__ = metadata.version('aioproxy')
 except:
     __version__ = 'DEV'
