@@ -4,6 +4,8 @@
 
 A simple transparent proxy server implemented with pure Python.
 
+Both HTTP proxy and SOCKS proxy are supported on the same port.
+
 ## Installation
 
 ```sh
