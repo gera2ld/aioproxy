@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gera2ld.aioproxy"
-version = "0.2.0"
+version = "0.2.1"
 description = ""
 authors = ["Gerald <gera2ld@163.com>"]
 license = "MIT"
