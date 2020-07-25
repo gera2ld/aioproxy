@@ -78,7 +78,7 @@ async def handle_connect(reader, writer, method, path, protocol, headers, socks_
 async def handle_proxy(reader, writer, method, path, protocol, headers, socks_proxy):
     url = parse.urlparse(path)
     assert url.scheme == b'http'
-    hostname = url.hostname
+    hostname = url.hostname.decode()
     port = url.port or 80
     pathname = url.path
     if url.query:
