@@ -4,7 +4,7 @@ import time
 from urllib import parse
 from gera2ld.pyserve import Host
 from gera2ld.socks.client import create_client
-from .util import forward_pipes
+from gera2ld.socks.utils import forward_pipes
 
 async def read_headers(reader):
     while True:
