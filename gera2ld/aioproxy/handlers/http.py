@@ -9,8 +9,7 @@ from gera2ld.socks.utils import forward_pipes
 async def read_headers(reader):
     while True:
         line = await reader.readline()
-        line = line.strip()
-        if not line: break
+        if line == b'\r\n' or not line: break
         yield line
 
 async def send_headers(writer, headers):
@@ -44,10 +43,12 @@ async def send_response(writer, protocol=b'HTTP/1.1', status=200, message=b'OK',
 
 async def handle(reader, writer, socks_proxy=None, feed=b''):
     first_line = feed + await reader.readline()
+    initial_len = len(first_line)
     method, path, protocol = first_line.strip().split(b' ', 3)
     headers = []
     async for line in read_headers(reader):
-        key, _, value = line.partition(b':')
+        initial_len += len(line)
+        key, _, value = line.strip().partition(b':')
         if value is None: value = b''
         headers.append((key.strip().lower(), value.strip()))
     start_time = time.time()
@@ -56,6 +57,7 @@ async def handle(reader, writer, socks_proxy=None, feed=b''):
     else:
         len_local, len_remote, hostinfo = await handle_proxy(reader, writer, method, path, protocol, headers, socks_proxy)
     proxy_log = ' X' + socks_proxy if socks_proxy else ''
+    len_local += initial_len
     logging.info('%s %s%s %.3fs <%d >%d', method.decode(), hostinfo.host, proxy_log, time.time() - start_time, len_local, len_remote)
 
 async def open_connection(hostname, port, socks_proxy):
