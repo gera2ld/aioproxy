@@ -52,13 +52,20 @@ async def handle(reader, writer, socks_proxy=None, feed=b''):
         if value is None: value = b''
         headers.append((key.strip().lower(), value.strip()))
     start_time = time.time()
-    if method == b'CONNECT':
-        len_local, len_remote, hostinfo = await handle_connect(reader, writer, method, path, protocol, headers, socks_proxy)
-    else:
-        len_local, len_remote, hostinfo = await handle_proxy(reader, writer, method, path, protocol, headers, socks_proxy)
+    path = path.decode()
+    try:
+        if method == b'CONNECT':
+            len_local, len_remote = await handle_connect(reader, writer, method, path, protocol, headers, socks_proxy)
+        else:
+            len_local, len_remote = await handle_proxy(reader, writer, method, path, protocol, headers, socks_proxy)
+    except:
+        len_local = len_remote = 0
+        writer.close()
     proxy_log = ' X' + socks_proxy if socks_proxy else ''
     len_local += initial_len
-    logging.info('%s %s%s %.3fs <%d >%d', method.decode(), hostinfo.host, proxy_log, time.time() - start_time, len_local, len_remote)
+    logging.info('%s %s%s %.3fs <%d >%d',
+            method.decode(), path,
+            proxy_log, time.time() - start_time, len_local, len_remote)
 
 async def open_connection(hostname, port, socks_proxy):
     if socks_proxy is None:
@@ -69,30 +76,30 @@ async def open_connection(hostname, port, socks_proxy):
     return client.reader, client.writer
 
 async def handle_connect(reader, writer, method, path, protocol, headers, socks_proxy):
-    hostinfo = Host(path.decode())
     proxy_log = ' X' + socks_proxy if socks_proxy else ''
+    hostinfo = Host(path)
     logging.debug('%s %s%s', method.decode(), hostinfo.host, proxy_log)
     await send_response(writer, protocol, message=b'Connection established')
     remote_reader, remote_writer = await open_connection(hostinfo.hostname, hostinfo.port, socks_proxy)
     len_local, len_remote = await forward_pipes(reader, writer, remote_reader, remote_writer)
-    return len_local, len_remote, hostinfo
+    return len_local, len_remote
 
 async def handle_proxy(reader, writer, method, path, protocol, headers, socks_proxy):
+    proxy_log = ' X' + socks_proxy if socks_proxy else ''
     url = parse.urlparse(path)
-    assert url.scheme == b'http'
-    hostname = url.hostname.decode()
+    assert url.scheme == 'http'
+    hostname = url.hostname
     port = url.port or 80
     pathname = url.path
     if url.query:
-        pathname += b'?' + url.query
+        pathname += '?' + url.query
     hostinfo = Host((hostname, port))
-    proxy_log = ' X' + socks_proxy if socks_proxy else ''
     logging.debug('%s %s%s', method.decode(), hostinfo.host, proxy_log)
-    remote_reader, remote_writer = await open_connection(hostname, port, socks_proxy)
+    remote_reader, remote_writer = await open_connection(hostinfo.hostname, hostinfo.port, socks_proxy)
     headers = [header for header in headers if not header[0].startswith(b'proxy-')]
-    await send_request(remote_writer, pathname, method, protocol, headers)
+    await send_request(remote_writer, pathname.encode(), method, protocol, headers)
     len_local, len_remote = await forward_pipes(reader, writer, remote_reader, remote_writer)
-    return len_local, len_remote, hostinfo
+    return len_local, len_remote
 
 if __name__ == '__main__':
     from functools import partial
