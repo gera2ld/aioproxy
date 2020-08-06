@@ -105,4 +105,4 @@ if __name__ == '__main__':
     from functools import partial
     from gera2ld.pyserve import start_server_asyncio, run_forever
     logging.basicConfig(level=logging.INFO)
-    run_forever(start_server_asyncio(partial(handle, socks_proxy='socks5://127.0.0.1:2080'), ':4080'))
+    run_forever(start_server_asyncio(partial(handle, socks_proxy='socks5://127.0.0.1:2020'), ':2100'))
