@@ -13,7 +13,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.7"
 click = "^7.0"
-"gera2ld.socks" = "^0.4.0"
+"gera2ld.socks" = "^0.4.1"
 importlib_metadata = "^1.7.0"
 
 [tool.poetry.dev-dependencies]

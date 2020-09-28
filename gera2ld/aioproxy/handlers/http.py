@@ -81,7 +81,7 @@ async def handle_connect(reader, writer, method, path, protocol, headers, socks_
     logging.debug('%s %s%s', method.decode(), hostinfo.host, proxy_log)
     await send_response(writer, protocol, message=b'Connection established')
     remote_reader, remote_writer = await open_connection(hostinfo.hostname, hostinfo.port, socks_proxy)
-    len_local, len_remote = await forward_pipes(reader, writer, remote_reader, remote_writer)
+    len_local, len_remote, exc = await forward_pipes(reader, writer, remote_reader, remote_writer)
     return len_local, len_remote
 
 async def handle_proxy(reader, writer, method, path, protocol, headers, socks_proxy):
@@ -98,7 +98,7 @@ async def handle_proxy(reader, writer, method, path, protocol, headers, socks_pr
     remote_reader, remote_writer = await open_connection(hostinfo.hostname, hostinfo.port, socks_proxy)
     headers = [header for header in headers if not header[0].startswith(b'proxy-')]
     await send_request(remote_writer, pathname.encode(), method, protocol, headers)
-    len_local, len_remote = await forward_pipes(reader, writer, remote_reader, remote_writer)
+    len_local, len_remote, exc = await forward_pipes(reader, writer, remote_reader, remote_writer)
     return len_local, len_remote
 
 if __name__ == '__main__':
