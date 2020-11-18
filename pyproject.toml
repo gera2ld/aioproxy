@@ -17,6 +17,10 @@ click = "^7.0"
 importlib_metadata = "^1.7.0"
 
 [tool.poetry.dev-dependencies]
+jedi = "^0.17.2"
+pylint = "^2.6.0"
+rope = "^0.18.0"
+yapf = "^0.30.0"
 
 [tool.poetry.scripts]
 aioproxy = "gera2ld.aioproxy.cli:main"
