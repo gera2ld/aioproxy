@@ -17,11 +17,11 @@ async def handle(reader, writer, config, feed=b''):
     version, = feed
     Handler = handler_map[version]
     handler = Handler(reader, writer, config, udp_server)
-    _name, len_local, len_remote, _error = await handler.handle()
+    name, len_local, len_remote, _error = await handler.handle()
     proxy = handler.config.get_proxy(host=handler.addr[0],
                                      port=handler.addr[1],
                                      hostname=handler.addr[0])
     proxy_log = ' X' + str(proxy) if proxy else ''
-    logging.info('SOCKS %s%s %.3fs <%d >%d',
-                 Host(handler.addr).host, proxy_log,
+    logging.info('SOCKS %s:%s%s %.3fs <%d >%d',
+                 name, Host(handler.addr).host, proxy_log,
                  time.time() - start_time, len_local, len_remote)
