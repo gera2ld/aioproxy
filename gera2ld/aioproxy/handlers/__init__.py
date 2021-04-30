@@ -1,7 +1,10 @@
 import asyncio
+
 from gera2ld.socks.server.config import Config
+
 from .http import handle as handle_http
 from .socks import handle as handle_socks
+
 
 def create_handler(socks_proxy=None):
     config = Config()
@@ -18,5 +21,6 @@ def create_handler(socks_proxy=None):
     def handle_holder(reader, writer):
         task = asyncio.create_task(handle(reader, writer))
         tasks.add(task)
-        task.add_done_callback(lambda res: tasks.discard(task))
+        task.add_done_callback(lambda _: tasks.discard(task))
+
     return handle_holder

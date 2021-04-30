@@ -1,5 +1,6 @@
 import logging
 import time
+
 from gera2ld.pyserve import Host
 from gera2ld.socks.server import SOCKS4Handler, SOCKS5Handler, UDPRelayServer
 
@@ -22,6 +23,6 @@ async def handle(reader, writer, config, feed=b''):
                                      port=handler.addr[1],
                                      hostname=handler.addr[0])
     proxy_log = ' X' + str(proxy) if proxy else ''
-    logging.info('SOCKS %s:%s%s %.3fs <%d >%d',
-                 name, Host(handler.addr).host, proxy_log,
+    logging.info('SOCKS %s:%s%s %.3fs <%d >%d', name,
+                 Host(handler.addr).host, proxy_log,
                  time.time() - start_time, len_local, len_remote)
