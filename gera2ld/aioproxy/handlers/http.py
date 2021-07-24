@@ -5,7 +5,7 @@ from urllib import parse
 
 from gera2ld.pyserve import Host
 from gera2ld.socks.client import create_client
-from gera2ld.socks.utils import forward_pipes
+from gera2ld.socks.utils import Connection
 
 
 async def read_headers(reader):
@@ -102,9 +102,16 @@ async def handle_connect(reader, writer, method, path, protocol, headers,
     await send_response(writer, protocol, message=b'Connection established')
     remote_reader, remote_writer = await open_connection(
         hostinfo.hostname, hostinfo.port, socks_proxy)
-    len_local, len_remote, exc = await forward_pipes(reader, writer,
-                                                     remote_reader,
-                                                     remote_writer)
+    forwarder = Connection(reader,
+                           writer,
+                           remote_reader,
+                           remote_writer,
+                           meta={'type': 'socks'})
+    try:
+        await forwarder.forward()
+    except:
+        pass
+    len_local, len_remote = forwarder.local_len, forwarder.remote_len
     return len_local, len_remote
 
 
@@ -127,9 +134,16 @@ async def handle_proxy(reader, writer, method, path, protocol, headers,
     ]
     await send_request(remote_writer, pathname.encode(), method, protocol,
                        headers)
-    len_local, len_remote, exc = await forward_pipes(reader, writer,
-                                                     remote_reader,
-                                                     remote_writer)
+    forwarder = Connection(reader,
+                           writer,
+                           remote_reader,
+                           remote_writer,
+                           meta={'type': 'http'})
+    try:
+        await forwarder.forward()
+    except:
+        pass
+    len_local, len_remote = forwarder.local_len, forwarder.remote_len
     return len_local, len_remote
 
 
